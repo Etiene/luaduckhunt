@@ -28,7 +28,7 @@ function Duck:move(speed)
 		self.pos_y = self.pos_y-speed
 	end
 
-	if self.pos_x == 256*3 then -- if it hits end of screen, it goes back to the beginning 
+	if self.pos_x >= 256*3 then -- if it hits end of screen, it goes back to the beginning 
 		self.pos_x = -32*3
 	end
 end

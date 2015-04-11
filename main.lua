@@ -2,17 +2,16 @@ local Quads
 local Sprites
 local Duck = require "duck"
 local ducks = {}
+local score = 0
+local speed = 1
+local dead_ducks = 0
 
 function love.draw()
-      
-      
 	for k,d in pairs(ducks) do -- for each duck in game draw and move
 		love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,3,3)
 		
 
 		if d.status == 'dead' then
-			--love.graphics.print(love.timer.getTime(), 0,0)
-			--love.graphics.print(d.dead_time, 100,100)
 			if love.timer.getTime() - d.dead_time > 0.3 then
 				d.sprite = 9
 				d:move(3)
@@ -22,16 +21,24 @@ function love.draw()
 				love.graphics.rectangle("fill", d.pos_x, d.pos_y, 32*3, 32*3) -- hit animation
 			end
 		else 
-			d:move(3)
+			d:move(speed)
 		end
 
 
-		if d.pos_y == 224*3 then -- dead hitting bottom of the screen, remove from game
+		if d.pos_y >= 224*3 then -- dead hitting bottom of the screen, remove from game
 			ducks[k] = nil
 		end
 	end
 
     love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3) -- bushes
+    love.graphics.print("Score: "..score,570,600)
+
+    if (math.random(100) == 1 or #ducks == 0) and #ducks <= 3 then -- new ducks!
+    	local d = Duck:new()
+    	d.pos_y = math.random(300)
+		table.insert(ducks,d)
+	end
+
 end
 
 function love.mousepressed(x, y, button)
@@ -39,6 +46,9 @@ function love.mousepressed(x, y, button)
 		for _,d in pairs(ducks) do
 			if d:over(x,y) then
 				d:hit(love.timer.getTime())
+				dead_ducks = dead_ducks + 1
+				score = math.floor(score + 1000*speed)
+				speed = speed * 1.1
 			end
 		end
    	end
@@ -49,6 +59,11 @@ function love.load()
 	love.window.setMode( 256*3, 224*3)
     Sprites = love.graphics.newImage('images/sprites.png')
     love.graphics.setBackgroundColor(100,176,255)
+
+    local font = love.graphics.newFont(24)
+    love.graphics.setFont(font)
+
+    math.randomseed(love.timer.getTime())
   
 	local tilesetW, tilesetH = Sprites:getWidth(), Sprites:getHeight()
   
@@ -73,8 +88,9 @@ function love.load()
 	end
 	
 
-	-- 1 duck in game
+	-- 1st duck in game
 	local d = Duck:new()
+	d.pos_y = math.random(300)
 	table.insert(ducks,d)
 
 end
