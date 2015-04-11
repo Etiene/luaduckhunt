@@ -10,13 +10,13 @@ local dead_ducks = 0
 
 local function spawn_duck()
 	local d = Duck:new()
+	math.randomseed(love.timer.getTime())
 	d.pos_y = math.random(300)
 	table.insert(ducks,d)
 end
 
 local function death_animation(d,k)
 	if love.timer.getTime() - d.dead_time > 0.3 then
-		d.sprite = 9
 		d:move(3)
 	elseif love.timer.getTime() - d.dead_time < 0.1 then
 		love.graphics.rectangle("fill", d.pos_x, d.pos_y, 32*3, 32*3) -- hit animation
@@ -71,6 +71,7 @@ function love.mousepressed(x, y, button)
 		for _,d in pairs(ducks) do
 			if d:over(x,y) then
 				d:hit(love.timer.getTime())
+				d.frame = 0
 				score = math.floor(score + 1000*speed)
 				speed = speed * 1.1
 			end
@@ -98,7 +99,7 @@ function love.load()
  		{297,136,32,32}, --blackduck2
  		{331,136,32,32}, --blackduck3
  		{258,171,32,32}, --blackduck4
- 		{196,171,32,32}, --blackduck5
+ 		{296,171,32,32}, --blackduck5
  		{333,171,32,32}, --blackduck6
  		{264,210,32,32}, --blackduck7
  		{296,210,32,32}, --blackduck8

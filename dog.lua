@@ -18,7 +18,7 @@ function Dog:move()
 		self.pos_y = self.pos_y + 2
 	end
 
-	if self.pos_y <= 350 then
+	if self.pos_y <= 340 then
 		self.animation = 'down'
 	end
 
