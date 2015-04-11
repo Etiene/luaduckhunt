@@ -1,5 +1,6 @@
 local Duck = require "duck"
 local Dog = require "dog"
+local Head
 local Quads
 local Sprites
 local ducks = {}
@@ -7,6 +8,8 @@ local dogs = {}
 local score = 0
 local speed = 1
 local dead_ducks = 0
+local cheat_mode = false
+local Sounds
 
 local function spawn_duck()
 	local d = Duck:new()
@@ -34,6 +37,7 @@ local function dog_animation()
 		dog_catch = true
 		local d = Dog:new()
 		table.insert(dogs,d)
+		Sounds[2]:play()
 	end
 	if #dogs > 0 then
 		love.graphics.draw(Sprites, Quads[11], dogs[1].pos_x, dogs[1].pos_y,0,3,3)
@@ -46,7 +50,11 @@ end
 
 function love.draw()
 	for k,d in pairs(ducks) do -- for each duck in game draw and move
-		love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,d.scale_x,d.scale_y)
+		if cheat_mode == false then
+			love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,d.scale_x,d.scale_y)
+		else
+			love.graphics.draw(Head, d.pos_x, d.pos_y,0,0.2,0.2)
+		end
 		
 		if d.status == 'dead' then
 			death_animation(d,k)
@@ -68,6 +76,8 @@ end
 
 function love.mousepressed(x, y, button)
    	if button == "l" then
+   		Sounds[1]:play()
+
 		for _,d in pairs(ducks) do
 			if d:over(x,y) then
 				d:hit(love.timer.getTime())
@@ -79,11 +89,27 @@ function love.mousepressed(x, y, button)
    	end
 end
 
+function love.keypressed(key)
+   	if key == "c" then
+   		Sounds[3]:play()
+		ducks = {}
+		cheat_mode = true
+   	end
+end
+
 function love.load()
 	love.window.setTitle("#TeamDucks")
 	love.window.setMode( 256*3, 224*3)
     Sprites = love.graphics.newImage('images/sprites.png')
+    Head = love.graphics.newImage('images/head.png')
     love.graphics.setBackgroundColor(100,176,255)
+
+    Sounds = {
+    	love.audio.newSource("mp3/hit.mp3","static"),
+    	love.audio.newSource("mp3/dog_win.mp3","static"),
+    	love.audio.newSource("mp3/llama.mp3")
+    } 
+	
 
     local font = love.graphics.newFont(24)
     love.graphics.setFont(font)
