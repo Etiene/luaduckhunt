@@ -6,11 +6,20 @@ local ducks = {}
 function love.draw()
       love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3)
       
-      for k,d in pairs(ducks) do
-      	--love.graphics.print(d.status,d.pos_x,d.pos_y)
+      for _,d in pairs(ducks) do
       	love.graphics.draw(Sprites, Quads[5], d.pos_x, d.pos_y,0,3,3)
       	d:move(4)
       end
+end
+
+function love.mousepressed(x, y, button)
+   	if button == "l" then
+		for _,d in pairs(ducks) do
+			if d:over(x,y) then
+				d:hit()
+			end
+		end
+   	end
 end
 
 function love.load()
