@@ -15,6 +15,13 @@ from Quartz.CoreGraphics import kCGEventLeftMouseDown
 from Quartz.CoreGraphics import kCGEventLeftMouseUp
 from Quartz.CoreGraphics import kCGMouseButtonLeft
 from Quartz.CoreGraphics import kCGHIDEventTap
+from Quartz.CoreGraphics import CGEventCreate
+from Quartz.CoreGraphics import CGEventGetLocation
+
+def getMousePosition():
+	ourEvent = CGEventCreate(None);
+	currentpos=CGEventGetLocation(ourEvent);
+	return float(str(currentpos[0])), float(str(currentpos[1]))
 
 def mouseEvent(type, posx, posy):
 	theEvent = CGEventCreateMouseEvent(None, type, (posx,posy), kCGMouseButtonLeft)
@@ -28,34 +35,39 @@ def mouseclick(posx,posy):
 
 ######
 
-buffSize = 0
-buff = []
+old1 = [0.0,0.0]
 
-def appendBuff(elem):
+def moveMouse(x,y):
+	pX, pY = getMousePosition()
+	dx = (x + 1000.0)/50.0 - 20.0
+	dy = (y + 1000.0)/50.0 - 20.0
 	
-
-
-def moveMouse(coords):
-	x = coords[0]
-	y = coords[1]
-	z = coords[2]
-	print x + ", " + y
-	#mousemove(float(x),float(y))
+	mousemove(pX + dx, pY + dy)
+	#print "d: " + str(dx) + ", " + str(dy)
+		 
 	
 def pressButton(button):
-	print "Button " + button
+	print "echo"
+	if button == 1:
+		pX, pY = getMousePosition()
+		mouseclick(pX, pY)
+	else:
+		mousemove(700,450)
+
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
 
 	def do_GET(self):
 		if None != re.search('/api/values/*', self.path):
 			words = self.path.split("/")
+			
 			if len(words[3]) > 2:
 				coords = words[3].split(",")
-				moveMouse(coords)
+				#print "c: " + coords[0] + ", " + coords[1]
+				moveMouse(float(coords[0]), (-1)*float(coords[1]))
 			else:
 				button = words[3]
-				pressButton(button)
+				pressButton(float(button))
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
 	allow_reuse_address = True
