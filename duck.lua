@@ -8,6 +8,8 @@ function Duck:new (obj)
 		pos_x = 0, 
 		pos_y = 0,
 		sprite = 5,
+		scale_x = 3,
+		scale_y = 3,
 		dead_time = 0,
 		frame = 0
 	}
@@ -29,8 +31,12 @@ function Duck:move(speed)
 		self.pos_y = math.floor(self.pos_y-speed)
 	end
 
-	if self.pos_x >= 256*3 then -- if it hits right end of screen, it goes back to the left beginning 
-		self.pos_x = -32*3
+	if self.pos_x >= 256*3 then -- if it hits right end of screen turns 
+		self.direction_x = 'left'
+		self.scale_x = -3
+	elseif self.pos_x <= -5 then 
+		self.direction_x = 'right'
+		self.scale_x = 3
 	end
 
 
@@ -41,7 +47,7 @@ function Duck:move(speed)
 		end
 		if self.pos_y >= 123*3 then
 			self.direction_y = 'up'
-		elseif self.pos_y <= 5 then
+		elseif self.pos_y <= -5 then
 			self.direction_y = 'down'
 		end
 	else

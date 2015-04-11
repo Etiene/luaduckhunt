@@ -46,7 +46,7 @@ end
 
 function love.draw()
 	for k,d in pairs(ducks) do -- for each duck in game draw and move
-		love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,3,3)
+		love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,d.scale_x,d.scale_y)
 		
 		if d.status == 'dead' then
 			death_animation(d,k)
