@@ -1,8 +1,13 @@
 local Quads
 local Sprites
+local Duck = require "duck"
+local test = "hey"
+local test2 = "hey2"
 
 function love.draw()
       love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3)
+      love.graphics.print(test,0,0)
+      love.graphics.print(test2,100,100)
 end
 
 function love.load()
@@ -13,6 +18,7 @@ function love.load()
 	local tilesetW, tilesetH = Sprites:getWidth(), Sprites:getHeight()
   
  	local Tiles = {
+ 		--x and y from top left pixel, width and height
  		{644,136,256,224}, --background
  		{263,136,32,32}, --blackduck1
  		{297,136,32,32}, --blackduck2
@@ -23,9 +29,8 @@ function love.load()
  		{264,210,32,32}, --blackduck7
  		{196,210,32,32}, --blackduck8
  		{324,210,32,32}, --blackduck9
- 
-
 	}
+
 	Quads = {}
 	for i,info in ipairs(Tiles) do
 	  -- info[1] = x, info[2] = y
@@ -33,5 +38,7 @@ function love.load()
 	end
 	
 
+	local d = Duck:new()
 
+	test = d.status
 end
