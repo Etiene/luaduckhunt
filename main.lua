@@ -1,6 +1,7 @@
 local Duck = require "duck"
 local Dog = require "dog"
-local Head
+local Llama
+local DeadLlama
 local Quads
 local Sprites
 local ducks = {}
@@ -10,6 +11,7 @@ local speed = 1
 local dead_ducks = 0
 local cheat_mode = false
 local Sounds
+local max_ducks = 3
 
 local function spawn_duck()
 	local d = Duck:new()
@@ -53,7 +55,15 @@ function love.draw()
 		if cheat_mode == false then
 			love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,d.scale_x,d.scale_y)
 		else
-			love.graphics.draw(Head, d.pos_x, d.pos_y,0,0.2,0.2)
+			if d.frame > 2 and d.frame < 5 then
+				love.graphics.rectangle("fill", 0, 0, 256*3, 224*3) -- flash!!!
+			end
+
+			if d.status == 'alive' then
+				love.graphics.draw(Llama, d.pos_x, d.pos_y,0,0.15,0.15)
+			else 
+				love.graphics.draw(DeadLlama, d.pos_x, d.pos_y+150,180,0.15,0.15)
+			end
 		end
 		
 		if d.status == 'dead' then
@@ -63,7 +73,7 @@ function love.draw()
 		end
 	end
 
-    if (math.random(100) == 1 or #ducks == 0) and #ducks < 3 then -- new ducks! (max = 3)
+    if (math.random(100) == 1 or #ducks == 0) and #ducks < max_ducks then -- new ducks! (max = 3)
     	spawn_duck()
 	end
 
@@ -90,10 +100,18 @@ function love.mousepressed(x, y, button)
 end
 
 function love.keypressed(key)
-   	if key == "c" then
+   	if key == "c" and cheat_mode == false then
    		Sounds[3]:play()
 		ducks = {}
+		speed = 4
+		max_ducks = 5
 		cheat_mode = true
+   	elseif  key == "c" and cheat_mode == true then
+   		Sounds[3]:stop()
+		ducks = {}
+		speed = 2
+		max_ducks = 3
+		cheat_mode = false
    	end
 end
 
@@ -101,7 +119,8 @@ function love.load()
 	love.window.setTitle("#TeamDucks")
 	love.window.setMode( 256*3, 224*3)
     Sprites = love.graphics.newImage('images/sprites.png')
-    Head = love.graphics.newImage('images/head.png')
+    Llama = love.graphics.newImage('images/lama2.png')
+    DeadLlama = love.graphics.newImage('images/lama3.png')
     love.graphics.setBackgroundColor(100,176,255)
 
     Sounds = {
