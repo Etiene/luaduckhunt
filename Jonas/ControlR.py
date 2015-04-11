@@ -18,10 +18,12 @@ from Quartz.CoreGraphics import kCGHIDEventTap
 
 from AppKit import NSScreen
 
+"""
 print "width"
 print NSScreen.mainScreen().frame().width
 print "height"
 print NSScreen.mainScreen().frame().height
+"""
 
 def mouseEvent(type, posx, posy):
 	theEvent = CGEventCreateMouseEvent(None, type, (posx,posy), kCGMouseButtonLeft)
@@ -39,7 +41,7 @@ def moveMouse(coords):
 	x = coords[0]
 	y = coords[1]
 	z = coords[2]
-	#print x + ", " + y
+	print x + ", " + y
 	#mousemove(float(x),float(y))
 	
 def pressButton(button):
