@@ -4,32 +4,34 @@ local Duck = require "duck"
 local ducks = {}
 
 function love.draw()
-      love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3)
       
-      for k,d in pairs(ducks) do -- for each duck in game draw and move
-      	love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,3,3)
-      	
+      
+	for k,d in pairs(ducks) do -- for each duck in game draw and move
+		love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,3,3)
+		
 
-      	if d.status == 'dead' then
-      		--love.graphics.print(love.timer.getTime(), 0,0)
-      		--love.graphics.print(d.dead_time, 100,100)
-      		if love.timer.getTime() - d.dead_time > 0.3 then
-      			d.sprite = 9
-      			d:move(3)
-      		elseif love.timer.getTime() - d.dead_time > 0.1 then
+		if d.status == 'dead' then
+			--love.graphics.print(love.timer.getTime(), 0,0)
+			--love.graphics.print(d.dead_time, 100,100)
+			if love.timer.getTime() - d.dead_time > 0.3 then
+				d.sprite = 9
+				d:move(3)
+			elseif love.timer.getTime() - d.dead_time > 0.1 then
 
-      		else
-      			love.graphics.rectangle("fill", d.pos_x, d.pos_y, 32*3, 32*3) -- hit animation
-      		end
-      	else 
-      		d:move(3)
-      	end
+			else
+				love.graphics.rectangle("fill", d.pos_x, d.pos_y, 32*3, 32*3) -- hit animation
+			end
+		else 
+			d:move(3)
+		end
 
 
-      	if d.pos_y == 224*3 then -- dead hitting bottom of the screen, remove from game
-      		ducks[k] = nil
-      	end
-      end
+		if d.pos_y == 224*3 then -- dead hitting bottom of the screen, remove from game
+			ducks[k] = nil
+		end
+	end
+
+    love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3) -- bushes
 end
 
 function love.mousepressed(x, y, button)
@@ -46,6 +48,7 @@ function love.load()
 	love.window.setTitle("#TeamDucks")
 	love.window.setMode( 256*3, 224*3)
     Sprites = love.graphics.newImage('images/sprites.png')
+    love.graphics.setBackgroundColor(100,176,255)
   
 	local tilesetW, tilesetH = Sprites:getWidth(), Sprites:getHeight()
   
