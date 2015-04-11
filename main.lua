@@ -1,43 +1,68 @@
+local Duck = require "duck"
+local Dog = require "dog"
 local Quads
 local Sprites
-local Duck = require "duck"
 local ducks = {}
+local dogs = {}
 local score = 0
 local speed = 1
 local dead_ducks = 0
+
+local function spawn_duck()
+	local d = Duck:new()
+	d.pos_y = math.random(300)
+	table.insert(ducks,d)
+end
+
+local function death_animation(d,k)
+	if love.timer.getTime() - d.dead_time > 0.3 then
+		d.sprite = 9
+		d:move(3)
+	elseif love.timer.getTime() - d.dead_time < 0.1 then
+		love.graphics.rectangle("fill", d.pos_x, d.pos_y, 32*3, 32*3) -- hit animation
+	end
+
+	if d.pos_y >= 152*3 then -- dead hitting bushes, remove from game
+		dead_ducks = dead_ducks + 1
+		ducks[k] = nil
+	end
+end
+
+local function dog_animation()
+	if dead_ducks >= 2 then
+		dead_ducks = 0
+		dog_catch = true
+		local d = Dog:new()
+		table.insert(dogs,d)
+	end
+	if #dogs > 0 then
+		love.graphics.draw(Sprites, Quads[11], dogs[1].pos_x, dogs[1].pos_y,0,3,3)
+		dogs[1]:move()
+		if dogs[1].animation == 'stop' then
+			table.remove(dogs,1)
+		end
+	end
+end
 
 function love.draw()
 	for k,d in pairs(ducks) do -- for each duck in game draw and move
 		love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,3,3)
 		
-
 		if d.status == 'dead' then
-			if love.timer.getTime() - d.dead_time > 0.3 then
-				d.sprite = 9
-				d:move(3)
-			elseif love.timer.getTime() - d.dead_time > 0.1 then
-
-			else
-				love.graphics.rectangle("fill", d.pos_x, d.pos_y, 32*3, 32*3) -- hit animation
-			end
+			death_animation(d,k)
 		else 
 			d:move(speed)
 		end
-
-
-		if d.pos_y >= 224*3 then -- dead hitting bottom of the screen, remove from game
-			ducks[k] = nil
-		end
 	end
 
-    love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3) -- bushes
+    if (math.random(100) == 1 or #ducks == 0) and #ducks < 3 then -- new ducks! (max = 3)
+    	spawn_duck()
+	end
+
+	dog_animation()
+
+	love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3) -- bushes
     love.graphics.print("Score: "..score,570,600)
-
-    if (math.random(100) == 1 or #ducks == 0) and #ducks <= 3 then -- new ducks!
-    	local d = Duck:new()
-    	d.pos_y = math.random(300)
-		table.insert(ducks,d)
-	end
 
 end
 
@@ -46,7 +71,6 @@ function love.mousepressed(x, y, button)
 		for _,d in pairs(ducks) do
 			if d:over(x,y) then
 				d:hit(love.timer.getTime())
-				dead_ducks = dead_ducks + 1
 				score = math.floor(score + 1000*speed)
 				speed = speed * 1.1
 			end
@@ -79,6 +103,7 @@ function love.load()
  		{264,210,32,32}, --blackduck7
  		{296,210,32,32}, --blackduck8
  		{324,210,32,32}, --blackduck9
+ 		{504,309,56,39}, -- dog
 	}
 
 	Quads = {}
@@ -87,10 +112,7 @@ function love.load()
 	  Quads[i] = love.graphics.newQuad(info[1], info[2], info[3], info[4], tilesetW, tilesetH)
 	end
 	
-
 	-- 1st duck in game
-	local d = Duck:new()
-	d.pos_y = math.random(300)
-	table.insert(ducks,d)
-
+	spawn_duck()
 end
+
