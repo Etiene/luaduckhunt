@@ -16,15 +16,6 @@ from Quartz.CoreGraphics import kCGEventLeftMouseUp
 from Quartz.CoreGraphics import kCGMouseButtonLeft
 from Quartz.CoreGraphics import kCGHIDEventTap
 
-from AppKit import NSScreen
-
-"""
-print "width"
-print NSScreen.mainScreen().frame().width
-print "height"
-print NSScreen.mainScreen().frame().height
-"""
-
 def mouseEvent(type, posx, posy):
 	theEvent = CGEventCreateMouseEvent(None, type, (posx,posy), kCGMouseButtonLeft)
 	CGEventPost(kCGHIDEventTap, theEvent)
@@ -36,6 +27,13 @@ def mouseclick(posx,posy):
 	mouseEvent(kCGEventLeftMouseUp, posx,posy);
 
 ######
+
+buffSize = 0
+buff = []
+
+def appendBuff(elem):
+	
+
 
 def moveMouse(coords):
 	x = coords[0]
