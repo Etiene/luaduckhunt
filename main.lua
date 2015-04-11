@@ -1,19 +1,22 @@
 local Quads
 local Sprites
 local Duck = require "duck"
-local test = "hey"
-local test2 = "hey2"
+local ducks = {}
 
 function love.draw()
       love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3)
-      love.graphics.print(test,0,0)
-      love.graphics.print(test2,100,100)
+      
+      for k,d in pairs(ducks) do
+      	--love.graphics.print(d.status,d.pos_x,d.pos_y)
+      	love.graphics.draw(Sprites, Quads[5], d.pos_x, d.pos_y,0,3,3)
+      	d:move(4)
+      end
 end
 
 function love.load()
 	love.window.setTitle("#TeamDucks")
 	love.window.setMode( 256*3, 224*3)
-    Sprites = love.graphics.newImage('images/duck_hunt_sprites.png')
+    Sprites = love.graphics.newImage('images/sprites.png')
   
 	local tilesetW, tilesetH = Sprites:getWidth(), Sprites:getHeight()
   
@@ -39,6 +42,7 @@ function love.load()
 	
 
 	local d = Duck:new()
+	table.insert(ducks,d)
 
 	test = d.status
 end
