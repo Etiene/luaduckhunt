@@ -80,7 +80,7 @@ function love.draw()
 	dog_animation()
 
 	love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3) -- bushes
-    love.graphics.print("Score: "..score,570,600)
+    love.graphics.print("SCORE: "..score,570,600)
 
 end
 
@@ -130,7 +130,7 @@ function love.load()
     } 
 	
 
-    local font = love.graphics.newFont(24)
+    local font = love.graphics.newFont("font/DisposableDroidBB.otf",24)
     love.graphics.setFont(font)
 
     math.randomseed(love.timer.getTime())
