@@ -19,7 +19,8 @@ local stock_flight = require "Data.data"
 local mountain
 local mountain_quads
 local stock_duck_x = 0
-local circ = 0
+local counter = 0
+local circ = 5
 local stock_heights = {}
 
 local function spawn_duck()
@@ -87,7 +88,7 @@ end
 local function calcHeight(x)
 	local index = x	
 	local val = stock_flight[index]
-	local haha =  300-(300*val)
+	local haha =  300-(300*(val or 0.95))
 	return haha
 end
 
@@ -111,8 +112,18 @@ function love.draw()
 	update_score_display()
 	--stock_duck_x = (stock_duck_x + 1) % (256*3)
 	stock_duck_x = (stock_duck_x + 1)% (280*3)
-	circ = ((circ+1)%3)+5
-		
+	
+	counter = counter +1
+	if counter % 8 == 0 then
+		if circ == 5 then 
+			circ = 6
+		elseif circ == 6 then
+			circ = 7
+		else 
+			circ = 5
+		end
+	end
+
 	for k,d in pairs(ducks) do -- for each duck in game draw and move
 		if mode == 0 then
 			if d.sprite < 12 then
