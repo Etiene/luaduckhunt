@@ -154,10 +154,15 @@ function love.draw()
 	if mode == 2 then
 		love.graphics.draw(mountain, 0, 0,0, 1.5, 2)
 		draw_stock()
+		love.graphics.setColor(100,176,255)
+		love.graphics.rectangle("fill", stock_duck_x, 0, 900, 600)
+		love.graphics.setColor(255,255,255)
 		--love.graphics.draw(Sprites, Quads[5], stock_duck_x, calcHeight(stock_duck_x),0,3,3)
 		--love.graphics.draw(Sprites, Quads[5], stock_duck_x,stock_heights[math.ceil(stock_duck_x/#stock_flight)],0,3,3)
 		love.graphics.draw(Sprites, Quads[circ], stock_duck_x-45,calcHeight(stock_duck_x)-45,0,3,3)
-		love.graphics.print("x: "..circ,300,200)
+		love.graphics.setColor(0,0,0)
+		love.graphics.print("IBM",360,200)
+		love.graphics.setColor(255,255,255)
 	
 	end
 
