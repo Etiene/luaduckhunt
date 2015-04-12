@@ -33,10 +33,8 @@ function Duck:move(speed)
 
 	if self.pos_x >= 256*3 then -- if it hits right end of screen turns 
 		self.direction_x = 'left'
-		self.scale_x = -3
 	elseif self.pos_x <= -5 then 
 		self.direction_x = 'right'
-		self.scale_x = 3
 	end
 
 
@@ -57,11 +55,23 @@ end
 
 function Duck:flap(speed)
 	if self.frame == math.floor(10-speed) then
-		self.sprite = 6
+		if self.direction_x == 'right' then
+			self.sprite = 6
+		else 
+			self.sprite = 13
+		end
 	elseif self.frame == math.floor(20-speed) then
-		self.sprite = 7
+		if self.direction_x == 'right' then
+			self.sprite = 7
+		else 
+			self.sprite = 14
+		end
 	elseif self.frame == math.floor(30-speed) then
-		self.sprite = 5
+		if self.direction_x == 'right' then
+			self.sprite = 5
+		else 
+			self.sprite = 12
+		end
 		self.frame = 0
 	end
 

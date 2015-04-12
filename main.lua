@@ -7,11 +7,13 @@ local Sprites
 local ducks = {}
 local dogs = {}
 local score = 0
-local speed = 1
+local speed = 2.2
 local dead_ducks = 0
 local cheat_mode = false
 local Sounds
 local max_ducks = 3
+local cross
+local duck_flipped
 
 local function spawn_duck()
 	local d = Duck:new()
@@ -50,10 +52,21 @@ local function dog_animation()
 	end
 end
 
+local function drawCross()
+	love.mouse.setVisible( false )
+	x, y = love.mouse.getPosition()
+	love.graphics.draw(cross, x-20, y-20,0,0.1,0.1)
+end
+
 function love.draw()
 	for k,d in pairs(ducks) do -- for each duck in game draw and move
 		if cheat_mode == false then
-			love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,d.scale_x,d.scale_y)
+			if d.sprite < 12 then
+				love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,d.scale_x,d.scale_y)
+			else
+				love.graphics.draw(duck_flipped, Quads[d.sprite], d.pos_x, d.pos_y,0,d.scale_x,d.scale_y)
+			end
+
 		else
 			if d.frame > 2 and d.frame < 5 then
 				love.graphics.rectangle("fill", 0, 0, 256*3, 224*3) -- flash!!!
@@ -82,6 +95,7 @@ function love.draw()
 	love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3) -- bushes
     love.graphics.print("SCORE: "..score,570,600)
 
+    drawCross()
 end
 
 function love.mousepressed(x, y, button)
@@ -93,7 +107,7 @@ function love.mousepressed(x, y, button)
 				d:hit(love.timer.getTime())
 				d.frame = 0
 				score = math.floor(score + 1000*speed)
-				speed = speed * 1.1
+				speed = speed + 0.1
 			end
 		end
    	end
@@ -121,6 +135,8 @@ function love.load()
     Sprites = love.graphics.newImage('images/sprites.png')
     Llama = love.graphics.newImage('images/lama2.png')
     DeadLlama = love.graphics.newImage('images/lama3.png')
+    cross = love.graphics.newImage('images/cross.png')
+    duck_flipped = love.graphics.newImage('images/duck_r.png')
     love.graphics.setBackgroundColor(100,176,255)
 
     Sounds = {
@@ -158,6 +174,10 @@ function love.load()
 	  Quads[i] = love.graphics.newQuad(info[1], info[2], info[3], info[4], tilesetW, tilesetH)
 	end
 	
+	Quads[12] = love.graphics.newQuad(0,0,32,32, 109, 32)
+	Quads[13] = love.graphics.newQuad(37,0,32,32, 109, 32)
+	Quads[14] = love.graphics.newQuad(75,0,32,32, 109, 32)
+
 	-- 1st duck in game
 	spawn_duck()
 end
