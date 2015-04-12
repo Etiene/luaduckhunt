@@ -7,13 +7,20 @@ local Sprites
 local ducks = {}
 local dogs = {}
 local score = 0
-local speed = 2.2
+local speed = 2
 local dead_ducks = 0
-local cheat_mode = false
+local mode = 0
 local Sounds
 local max_ducks = 3
 local cross
 local duck_flipped
+local score_display = {}
+local stock_flight = require "Data.data"
+local mountain
+local mountain_quads
+local stock_duck_x = 0
+local circ = 0
+local stock_heights = {}
 
 local function spawn_duck()
 	local d = Duck:new()
@@ -58,17 +65,64 @@ local function drawCross()
 	love.graphics.draw(cross, x-20, y-20,0,0.1,0.1)
 end
 
+local function update_score_display()
+	for k,v in pairs(score_display) do
+		v[4] = v[4] -1
+		if v[4] <= 0 then
+			table.remove(score_display,k)
+		else
+			love.graphics.print(v[1],v[2],v[3])
+		end
+	end
+end
+
+--[[
+local function sample_mountain()
+	for k,v in pairs(mountain_quads) do
+		 	love.graphics.draw(mountain, v, k%mountain:getWidth(),k/mountain:getWidth(),0,1,1)
+	end
+end
+]]
+
+local function calcHeight(x)
+	local index = x	
+	local val = stock_flight[index]
+	local haha =  300-(300*val)
+	return haha
+end
+
+
+local function draw_stock()
+	local width = math.ceil(256*3/#stock_flight)
+	for k,v in pairs(stock_flight) do
+
+		love.graphics.setColor(100,176,255)
+		love.graphics.rectangle("fill", (k), 0, 1, 300-(300*v))
+		love.graphics.setColor(255,255,255)
+		if #stock_heights <= #stock_flight  then
+			table.insert(stock_heights,300-(300*v)-16*3)
+
+		end
+
+	end
+end
+
 function love.draw()
+	update_score_display()
+	--stock_duck_x = (stock_duck_x + 1) % (256*3)
+	stock_duck_x = (stock_duck_x + 1)% (280*3)
+	circ = ((circ+1)%3)+5
+		
 	for k,d in pairs(ducks) do -- for each duck in game draw and move
-		if cheat_mode == false then
+		if mode == 0 then
 			if d.sprite < 12 then
 				love.graphics.draw(Sprites, Quads[d.sprite], d.pos_x, d.pos_y,0,d.scale_x,d.scale_y)
 			else
 				love.graphics.draw(duck_flipped, Quads[d.sprite], d.pos_x, d.pos_y,0,d.scale_x,d.scale_y)
 			end
 
-		else
-			if d.frame > 2 and d.frame < 5 then
+		elseif mode == 1 then
+			if d.frame == 1 then
 				love.graphics.rectangle("fill", 0, 0, 256*3, 224*3) -- flash!!!
 			end
 
@@ -81,10 +135,21 @@ function love.draw()
 		
 		if d.status == 'dead' then
 			death_animation(d,k)
-		else 
+		elseif mode < 2 then 
 			d:move(speed)
 		end
 	end
+
+	if mode == 2 then
+		love.graphics.draw(mountain, 0, 0,0, 1.5, 2)
+		draw_stock()
+		--love.graphics.draw(Sprites, Quads[5], stock_duck_x, calcHeight(stock_duck_x),0,3,3)
+		--love.graphics.draw(Sprites, Quads[5], stock_duck_x,stock_heights[math.ceil(stock_duck_x/#stock_flight)],0,3,3)
+		love.graphics.draw(Sprites, Quads[circ], stock_duck_x-45,calcHeight(stock_duck_x)-45,0,3,3)
+		love.graphics.print("x: "..circ,300,200)
+	
+	end
+
 
     if (math.random(100) == 1 or #ducks == 0) and #ducks < max_ducks then -- new ducks! (max = 3)
     	spawn_duck()
@@ -94,6 +159,8 @@ function love.draw()
 
 	love.graphics.draw(Sprites, Quads[1], 0,0,0,3,3) -- bushes
     love.graphics.print("SCORE: "..score,570,600)
+
+    love.graphics.print("Mode: "..mode,100,600)
 
     drawCross()
 end
@@ -106,27 +173,37 @@ function love.mousepressed(x, y, button)
 			if d:over(x,y) then
 				d:hit(love.timer.getTime())
 				d.frame = 0
-				score = math.floor(score + 1000*speed)
+				local score_inc = math.floor(1000*speed)
+				score = score + score_inc
 				speed = speed + 0.1
+
+				--add to score display
+				table.insert(score_display, {score_inc,x-25,y,70})
 			end
 		end
    	end
 end
 
 function love.keypressed(key)
-   	if key == "c" and cheat_mode == false then
-   		Sounds[3]:play()
+	if key == "c" then
+		mode = (mode + 1) % 3
+	end
+
+	if mode == 1 then
+		Sounds[3]:play()
 		ducks = {}
 		speed = 4
 		max_ducks = 5
-		cheat_mode = true
-   	elseif  key == "c" and cheat_mode == true then
-   		Sounds[3]:stop()
+	else
+		Sounds[3]:stop()
 		ducks = {}
 		speed = 2
 		max_ducks = 3
-		cheat_mode = false
-   	end
+	end
+
+	if mode == 2 then
+		stock_duck_x = 0
+	end
 end
 
 function love.load()
@@ -138,6 +215,7 @@ function love.load()
     cross = love.graphics.newImage('images/cross.png')
     duck_flipped = love.graphics.newImage('images/duck_r.png')
     love.graphics.setBackgroundColor(100,176,255)
+    mountain = love.graphics.newImage('images/mountain2.jpg')
 
     Sounds = {
     	love.audio.newSource("mp3/hit.mp3","static"),
@@ -177,6 +255,16 @@ function love.load()
 	Quads[12] = love.graphics.newQuad(0,0,32,32, 109, 32)
 	Quads[13] = love.graphics.newQuad(37,0,32,32, 109, 32)
 	Quads[14] = love.graphics.newQuad(75,0,32,32, 109, 32)
+
+
+--[[
+	mountain_quads = {}
+	for i = 1,mountain:getWidth(),1 do
+		for j = 1,mountain:getHeight(),1 do
+			table.insert(mountain_quads,love.graphics.newQuad(i,j,1,1, mountain:getWidth(), mountain:getHeight()))
+		end
+	end
+	]]
 
 	-- 1st duck in game
 	spawn_duck()
